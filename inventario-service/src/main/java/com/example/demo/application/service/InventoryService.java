@@ -9,6 +9,7 @@ import com.example.demo.infrastructure.exception.ProductNotFoundException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,12 +23,15 @@ public class InventoryService {
 
     private final InventoryRepository repository;
     private final RestTemplate restTemplate;
-    private final String productServiceUrl = "http://localhost:8081/products";
+    private final String productServiceUrl;
 
-    public InventoryService(InventoryRepository repository) {
-        this.repository = repository;
-        this.restTemplate = new RestTemplate();
-    }
+    public InventoryService(
+            InventoryRepository repository,
+            @Value("${PRODUCT_SERVICE_URL:http://localhost:8081/products}") String productServiceUrl) {
+            this.repository = repository;
+            this.restTemplate = new RestTemplate();
+            this.productServiceUrl = productServiceUrl;
+        }
 
     // Crear inventario
     public Inventory createInventory(Long productId, Integer quantity) {

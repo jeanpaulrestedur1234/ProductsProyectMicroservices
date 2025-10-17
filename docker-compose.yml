@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  productos-service:
+    build:
+      context: ./productos-service
+    container_name: productos-service
+    ports:
+      - "8081:8081"
+
+  inventario-service:
+    build:
+      context: ./inventario-service
+    container_name: inventario-service
+    ports:
+      - "8082:8082"
+    environment:
+      - PRODUCT_SERVICE_URL=http://productos-service:8081/products
+    depends_on:
+      - productos-service
+
+  api-gateway:
+    build:
+      context: ./nginx
+    container_name: api-gateway
+    ports:
+      - "80:80"
+    depends_on:
+      - productos-service
+      - inventario-service
