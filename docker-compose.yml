@@ -14,7 +14,7 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - PRODUCT_SERVICE_URL=http://productos-service:8081/products
+      - PRODUCT_SERVICE_URL=http://productos-service:8081/product-microservice/products/
     depends_on:
       - productos-service
 

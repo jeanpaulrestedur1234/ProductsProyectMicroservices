@@ -27,7 +27,7 @@ public class InventoryService {
 
     public InventoryService(
             InventoryRepository repository,
-            @Value("${PRODUCT_SERVICE_URL:http://localhost:8081/products}") String productServiceUrl) {
+            @Value("${PRODUCT_SERVICE_URL:http://localhost:8081/inventory-microservice/products}") String productServiceUrl) {
             this.repository = repository;
             this.restTemplate = new RestTemplate();
             this.productServiceUrl = productServiceUrl;
