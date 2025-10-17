@@ -37,15 +37,7 @@ public class ProductController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product updated) {
-        return service.findById(id)
-                .map(existing -> {
-                    existing.setName(updated.getName());
-                    existing.setSku(updated.getSku());
-                    existing.setPrice(updated.getPrice());
-                    existing.setDescription(updated.getDescription());
-                    return ResponseEntity.ok(service.save(existing));
-                })
-                .orElse(ResponseEntity.notFound().build());
+        return ResponseEntity.ok(service.update(id, updated));
     }
 
     @DeleteMapping("/{id}")
@@ -53,4 +45,5 @@ public class ProductController {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
 }
