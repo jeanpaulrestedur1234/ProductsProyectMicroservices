@@ -2,14 +2,14 @@ version: "3.9"
 services:
   productos-service:
     build:
-      context: ./productos-service
+      context: ./Backend/productos-service
     container_name: productos-service
     ports:
       - "8081:8081"
 
   inventario-service:
     build:
-      context: ./inventario-service
+      context: ./Backend/inventario-service
     container_name: inventario-service
     ports:
       - "8082:8082"
