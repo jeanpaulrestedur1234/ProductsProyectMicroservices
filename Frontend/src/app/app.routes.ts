@@ -1,15 +1,26 @@
 import { Routes } from '@angular/router';
 import { ProductsPage } from './products/views/products-page/products-page';
+import { ProductPurchasePage } from './products/views/product-purchase-page/product-purchase-page';
 
 export const routes: Routes = [
   {
-    path: '',
+    path: 'products',
     component: ProductsPage,
-    data: { name: 'home' } // nombre de la ruta
+    data: { name: 'products' }
+  },
+  {
+    path: 'products/:id',
+    component: ProductPurchasePage,
+    data: { name: 'productPurchase' }
+  },
+  {
+    path: '',
+    redirectTo: 'products',
+    pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: '',
+    redirectTo: 'products',
     pathMatch: 'full'
   }
 ];

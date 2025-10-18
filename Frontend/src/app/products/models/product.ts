@@ -5,3 +5,7 @@ export interface Product {
   price: number;
   description: string;
 }
+
+export interface ProductWithQuantity extends Product {
+  quantity: number ;
+}

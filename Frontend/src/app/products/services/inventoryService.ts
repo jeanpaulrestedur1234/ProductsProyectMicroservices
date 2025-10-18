@@ -1,31 +1,46 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventoryService {
-   private apiUrl = '/inventories'; 
+  private apiUrl = `${environment.apiUrl}/inventories`;
+
+  private httpOptions = {
+    headers: new HttpHeaders({
+      'Access-Control-Allow-Origin': '*' // solo si el servidor lo permite
+    })
+  };
 
   constructor(private http: HttpClient) {}
 
-  getQuantity(productId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/${productId}`).pipe(
-      catchError(err => throwError(() => err))
+  /**
+   * Obtiene la cantidad disponible de un producto por su ID
+   */
+  getQuantity(productId: string): Promise<number> {
+    return firstValueFrom(
+      this.http.get<{ quantity: number }>(`${this.apiUrl}/${productId}`, this.httpOptions)
+    ).then(res => res.quantity);
+  }
+
+  /**
+   * Actualiza la cantidad de un producto
+   */
+  updateQuantity(productId: number, quantity: number): Promise<void> {
+    return firstValueFrom(
+      this.http.put<void>(`${this.apiUrl}/${productId}`, { quantity }, this.httpOptions)
     );
   }
 
-  updateQuantity(productId: number, quantity: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${productId}`, { quantity }).pipe(
-      catchError(err => throwError(() => err))
+  /**
+   * Obtiene todos los datos del inventario de un producto
+   */
+  getProduct(productId: string): Promise<any> {
+    return firstValueFrom(
+      this.http.get(`${this.apiUrl}/${productId}`, this.httpOptions)
     );
   }
-  getAllInventories(): Observable<any> {
-    return this.http.get(this.apiUrl).pipe(
-      catchError(err => throwError(() => err))
-    );
-  }
-
 }

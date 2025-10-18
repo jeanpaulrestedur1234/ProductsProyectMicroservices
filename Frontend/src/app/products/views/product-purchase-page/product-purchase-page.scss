@@ -1,0 +1,187 @@
+/* --- CONTENEDOR PRINCIPAL --- */
+.purchase-page {
+  display: flex;
+  flex-direction: row;
+  margin:auto;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+}
+
+/* --- OPCIONES DE COMPRA --- */
+.purchase-options {
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.purchase-options:hover {
+  box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+}
+
+.purchase-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* --- CAMPO DE CANTIDAD --- */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #1f2937; /* texto oscuro */
+}
+
+.form-control {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.form-control:focus {
+  border-color: #3b82f6;
+}
+
+.form-control.invalid {
+  border-color: #dc2626;
+}
+
+/* --- MENSAJES DE VALIDACIÓN --- */
+.validation-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.validation-messages .error-message {
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.validation-messages .success-message {
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* --- RESUMEN DE COMPRA --- */
+.purchase-summary {
+  border-top: 1px dashed #d1d5db;
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+/* --- BOTONES DE ACCIÓN --- */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.action-buttons .btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  color: #fff;
+}
+
+.btn-primary:disabled {
+  background-color: #93c5fd;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #d1d5db;
+}
+
+/* --- ESTADOS DE CARGA Y ERROR --- */
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 2rem;
+  background: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.loading-state .spinning {
+  font-size: 3rem;
+  animation: spin 1s linear infinite;
+  color: #3b82f6;
+}
+
+.error-state .material-icons {
+  font-size: 3rem;
+  color: #dc2626;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* --- RESPONSIVIDAD --- */
+@media (max-width: 640px) {
+  .purchase-page {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .purchase-options {
+    padding: 1.5rem;
+  }
+
+  .summary-item {
+    font-size: 0.95rem;
+  }
+
+  .form-control {
+    font-size: 0.95rem;
+  }
+}
