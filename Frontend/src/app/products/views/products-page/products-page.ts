@@ -1,20 +1,26 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProductsList } from '../../components/products-list/products-list';
 import { ProductForm } from '../../components/product-form/product-form';
+import { ProductsList } from '../../components/products-list/products-list';
 
 @Component({
   selector: 'app-products-page',
   standalone: true,
-  imports: [CommonModule, ProductsList, ProductForm],
+  imports: [CommonModule, ProductForm, ProductsList],
   templateUrl: './products-page.html',
-  styleUrl: './products-page.scss'
+  styleUrls: ['./products-page.scss']
 })
 export class ProductsPage {
-   showForm = false;
+  showForm = false;
 
   toggleForm(): void {
     this.showForm = !this.showForm;
   }
 
+  onProductCreated(): void {
+    this.showForm = false;
+  }
+  onCancel(): void {
+    this.showForm = false;
+  }
 }

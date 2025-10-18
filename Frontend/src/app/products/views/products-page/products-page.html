@@ -13,7 +13,7 @@
 
   <div class="content mt-6">
     @if (showForm) {
-      <app-product-form></app-product-form>
+      <app-product-form (productCreated)="onProductCreated()" (cancel)="onCancel()"></app-product-form>
     } @else {
       <app-products-list></app-products-list>
     }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Product } from '../../models/product';
 import { ProductsService } from '../../services/productsService';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-products-list',
@@ -19,8 +20,13 @@ export class ProductsList implements OnInit {
   editedProduct: Product | null = null;
   page = 1;
   limit = 10;
+  availableNext = true;
+  limitOptions = [5, 10, 20, 50];
 
-  constructor(private productsService: ProductsService) {}
+  constructor(
+    private productsService: ProductsService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.loadProducts();
@@ -29,19 +35,40 @@ export class ProductsList implements OnInit {
   async loadProducts(): Promise<void> {
     this.loading = true;
     this.error = null;
+
     try {
-      this.products = await this.productsService.listProducts(this.page - 1, this.limit);
-    } catch (error) {
-      console.error('❌ Error cargando productos:', error);
+      const newProducts: Product[] = await this.productsService.listProducts(this.page - 1, this.limit);
+
+      if (!newProducts || newProducts.length === 0) {
+        this.availableNext = false;
+        if (this.page > 1) {
+          this.page--;
+          this.toastr.warning('No hay más productos para mostrar.', 'Aviso');
+        } else {
+          this.products = [];
+          this.toastr.info('No se encontraron productos.', 'Información');
+        }
+        return;
+      }
+
+      this.products = newProducts;
+      this.availableNext = newProducts.length === this.limit;
+    } catch (error: unknown) {
       this.error = 'Error al cargar productos.';
+      this.toastr.error(this.error, 'Error');
     } finally {
       this.loading = false;
     }
   }
 
+  onLimitChange(): void {
+    this.page = 1;
+    this.loadProducts();
+  }
+
   startEdit(product: Product): void {
     this.editingId = product.id!;
-    this.editedProduct = { ...product };
+    this.editedProduct = JSON.parse(JSON.stringify(product));
   }
 
   cancelEdit(): void {
@@ -49,27 +76,65 @@ export class ProductsList implements OnInit {
     this.editedProduct = null;
   }
 
+  reload(): void {
+    this.page = 1;
+    this.loadProducts();
+  }
+
+  trackById(index: number, product: Product): number {
+    return product.id!;
+  }
+
+  prevPage(): void {
+    if (this.page > 1) {
+      this.page--;
+      this.loadProducts();
+    }
+  }
+
+  nextPage(): void {
+    if (this.availableNext) {
+      this.page++;
+      this.loadProducts();
+    } else {
+      this.toastr.warning('No hay más productos para mostrar.', 'Aviso');
+    }
+  }
+
+  canPrev(): boolean {
+    return this.page > 1;
+  }
+
+  canNext(): boolean {
+    return this.availableNext;
+  }
+
   async saveEdit(): Promise<void> {
     if (!this.editedProduct || !this.editingId) return;
+
     try {
       await this.productsService.updateProduct(this.editingId.toString(), this.editedProduct);
       await this.loadProducts();
       this.cancelEdit();
-    } catch (error) {
-      console.error('❌ Error guardando cambios:', error);
-      alert('Error al guardar cambios.');
+      this.toastr.success('Producto actualizado correctamente.', 'Éxito');
+    } catch (error: unknown) {
+      this.toastr.error('Error al guardar cambios.', 'Error');
     }
   }
 
   async deleteProduct(id: number): Promise<void> {
-    if (confirm('¿Seguro que deseas eliminar este producto?')) {
-      try {
-        await this.productsService.deleteProduct(id.toString());
-        this.products = this.products.filter(p => p.id !== id);
-      } catch (error) {
-        console.error('❌ Error eliminando producto:', error);
-        alert('Error al eliminar el producto.');
+    if (!confirm('¿Seguro que deseas eliminar este producto?')) return;
+
+    try {
+      await this.productsService.deleteProduct(id.toString());
+      this.toastr.success('Producto eliminado correctamente.', 'Éxito');
+      
+      if (this.products.length === 1 && this.page > 1) {
+        this.page--;
       }
+      await this.loadProducts();
+    } catch (error: unknown) {
+      this.toastr.error('Error al eliminar el producto.', 'Error');
     }
   }
 }
