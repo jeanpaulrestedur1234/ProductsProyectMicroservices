@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http'; // <-- IMPORTANTE
+import { provideHttpClient,withFetch  } from '@angular/common/http'; // <-- IMPORTANTE
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
@@ -11,6 +11,6 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
-    provideHttpClient() // <-- Aquí registramos HttpClient para inyección
+    provideHttpClient(withFetch()) // <-- Aquí registramos HttpClient para inyección
   ]
 };
