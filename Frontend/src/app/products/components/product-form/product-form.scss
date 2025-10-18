@@ -1,0 +1,250 @@
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: var(--text-primary);
+  text-align: center;
+  background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+form {
+  background: var(--surface);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color);
+}
+
+/* Grupo de campo */
+.form-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+/* Labels */
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+/* Inputs y textareas */
+input[type="text"],
+input[type="number"],
+textarea {
+  width: 95%;
+  border: 2px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  color: var(--text-primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--surface);
+  font-family: inherit;
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-light);
+    transform: translateY(-2px);
+  }
+
+  &:hover:not(:focus) {
+    border-color: #9ca3af;
+  }
+
+  // Estado de error
+  &.ng-invalid.ng-touched {
+    border-color: #ef4444;
+
+    &:focus {
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+    }
+  }
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+/* Input de número - ocultar flechas */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Contenedor de botones */
+.button-group {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Botones base */
+button {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  &:active::before {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+/* Botón primario (Crear) */
+button[type="submit"] {
+  background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+
+  &:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.6;
+  }
+}
+
+/* Botón secundario (Cancelar) */
+button[type="button"] {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  box-shadow: none;
+
+  &:hover {
+    background: #f3f4f6;
+    border-color: var(--neutral);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* Mensajes de validación */
+.error-message {
+  display: block;
+  margin-top: 0.5rem;
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Indicador de campo requerido */
+.required::after {
+  content: ' *';
+  color: #ef4444;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .form-container {
+    padding: 1rem;
+  }
+
+  form {
+    padding: 1.5rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+/* Estado de focus visible para accesibilidad */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Animación de entrada del formulario */
+form {
+  animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

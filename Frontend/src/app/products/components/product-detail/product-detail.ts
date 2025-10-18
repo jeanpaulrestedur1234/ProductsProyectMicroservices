@@ -31,7 +31,7 @@ export class ProductDetail {
     this.error = null;
     this.productsService.getProduct(id).subscribe({
       next: (res) => {
-        this.product = res.data;
+        this.product = res;
         this.loadInventory(id);
       },
       error: () => {

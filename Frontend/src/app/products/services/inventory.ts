@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class Inventory {
-   private apiUrl = '/inventories'; // Proxy Nginx
+   private apiUrl = '/inventories/'; // Proxy Nginx
 
   constructor(private http: HttpClient) {}
 
@@ -19,6 +19,11 @@ export class Inventory {
 
   updateQuantity(productId: string, quantity: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/${productId}`, { quantity }).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+  getAllInventories(): Observable<any> {
+    return this.http.get(this.apiUrl).pipe(
       catchError(err => throwError(() => err))
     );
   }
