@@ -1,16 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { Products as ProductsService } from '../../services/products';
 import { Inventory as InventoryService } from '../../services/inventory';
+import { Product } from '../../models/product';
+
 @Component({
   selector: 'app-product-detail',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './product-detail.html',
-  styleUrl: './product-detail.scss'
+  styleUrls: ['./product-detail.scss']
 })
-export class ProductDetail {
+export class ProductDetail implements OnInit {
 
-   product: any = null;
+  product: Product | null = null;
   quantity: number | null = null;
   loading = false;
   error: string | null = null;
@@ -22,52 +26,57 @@ export class ProductDetail {
   ) {}
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id')!;
-    this.loadProduct(id);
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loadProduct(id);
+    } else {
+      this.error = 'Producto no encontrado';
+    }
   }
 
-  loadProduct(id: string): void {
+  async loadProduct(id: string): Promise<void> {
     this.loading = true;
     this.error = null;
-    this.productsService.getProduct(id).subscribe({
-      next: (res) => {
-        this.product = res;
-        this.loadInventory(id);
-      },
-      error: () => {
-        this.error = 'Producto no encontrado';
-        this.loading = false;
-      }
-    });
+
+    try {
+      console.log(`🔍 Cargando producto con ID: ${id}`);
+      this.product = await this.productsService.getProduct(id);
+      console.log('✅ Producto cargado:', this.product);
+      await this.loadInventory(id);
+    } catch (error) {
+      console.error('❌ Error al cargar producto:', error);
+      this.error = 'No se pudo cargar el producto.';
+    } finally {
+      this.loading = false;
+    }
   }
 
-  loadInventory(id: string): void {
-    this.inventoryService.getQuantity(id).subscribe({
-      next: (res) => {
-        this.quantity = res.data.attributes.quantity;
-        this.loading = false;
-      },
-      error: () => {
-        this.error = 'Error cargando inventario';
-        this.loading = false;
-      }
-    });
+  async loadInventory(id: string): Promise<void> {
+    try {
+      const res = await this.inventoryService.getQuantity(id);
+
+      console.log('📦 Inventario cargado:', this.quantity);
+    } catch (error) {
+      console.error('❌ Error cargando inventario:', error);
+      this.error = 'Error al cargar inventario.';
+    }
   }
 
-  buy(): void {
-    if (!this.product || !this.quantity) return;
+  async buy(): Promise<void> {
+    if (!this.product || this.quantity == null) return;
+
     if (this.quantity > 0) {
-      const id = this.product.id;
-      this.inventoryService.updateQuantity(id, this.quantity - 1).subscribe({
-        next: () => {
-          this.quantity = this.quantity! - 1;
-        },
-        error: () => {
-          this.error = 'Error al actualizar inventario';
-        }
-      });
+      try {
+        const newQuantity = this.quantity - 1;
+        await this.inventoryService.updateQuantity(this.product.id, newQuantity);
+        this.quantity = newQuantity;
+        console.log(`🛒 Compra realizada. Stock actualizado a ${this.quantity}`);
+      } catch (error) {
+        console.error('❌ Error al actualizar inventario:', error);
+        this.error = 'No se pudo actualizar el inventario.';
+      }
     } else {
-      alert('No hay stock disponible');
+      alert('⚠️ No hay stock disponible');
     }
   }
 }

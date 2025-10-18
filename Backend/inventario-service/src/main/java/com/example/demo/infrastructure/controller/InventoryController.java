@@ -20,7 +20,7 @@ public class InventoryController {
         this.service = service;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Inventory> create(@RequestParam Long productId,
             @RequestParam Integer quantity) {
         log.info("POST /inventories - productId={}, quantity={}", productId, quantity);
@@ -35,7 +35,7 @@ public class InventoryController {
         return ResponseEntity.ok(inventory);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<ProductInventoryDTO>> getAllProductsWithQuantities() {
         log.info("GET /inventories - fetching all products with quantities");
         List<ProductInventoryDTO> result = service.getAllProductsWithQuantities();

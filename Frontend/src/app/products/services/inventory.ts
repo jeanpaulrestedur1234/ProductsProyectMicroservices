@@ -17,7 +17,7 @@ export class Inventory {
     );
   }
 
-  updateQuantity(productId: string, quantity: number): Observable<any> {
+  updateQuantity(productId: number, quantity: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/${productId}`, { quantity }).pipe(
       catchError(err => throwError(() => err))
     );

@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { Products as ProductsService } from '../../services/products';
 import { CommonModule } from '@angular/common';
 import { Product } from '../../models/product';
+import {Products as ProductsService} from '../../services/products';
 @Component({
   selector: 'app-products-list',
-  standalone: true,          // <- necesario para usar imports
-  imports: [CommonModule],   // <- para ngIf y ngFor
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './products-list.html',
-  styleUrls: ['./products-list.scss'] // <- corregido
+  styleUrls: ['./products-list.scss']
 })
 export class ProductsList implements OnInit {
-
   products: Product[] = [];
   loading = false;
   error: string | null = null;
@@ -23,23 +22,20 @@ export class ProductsList implements OnInit {
     this.loadProducts();
   }
 
-  loadProducts(): void {
+  async loadProducts(): Promise<void> {
     this.loading = true;
     this.error = null;
-    console.log('Loading products, page:', this.page-1, 'limit:', this.limit);
 
-    this.productsService.listProducts(this.page-1, this.limit).subscribe({
-      next: (res) => {
-        console.log('Products loaded successfully:', res);
-
-        this.products = Array.isArray(res) ? res : res.data;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.error = 'Error cargando productos';
-        this.loading = false;
-      }
-    });
+    try {
+      console.log(`🔄 Loading products — page: ${this.page - 1}, limit: ${this.limit}`);
+      const response = await this.productsService.listProducts(this.page - 1, this.limit);
+      this.products = Array.isArray(response) ? response : [];
+      console.log('✅ Products loaded successfully:', this.products);
+    } catch (error) {
+      console.error('❌ Error loading products:', error);
+      this.error = 'Error cargando productos. Intenta nuevamente.';
+    } finally {
+      this.loading = false;
+    }
   }
 }

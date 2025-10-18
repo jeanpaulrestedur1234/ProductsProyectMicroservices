@@ -20,7 +20,7 @@ public class ProductController {
         this.service = service;
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Product> create(@RequestBody Product product) {
         log.info("POST /products - request: {}", product);
         Product saved = service.save(product);
@@ -40,7 +40,7 @@ public class ProductController {
         return ResponseEntity.ok(product);
     }
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<Product>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
