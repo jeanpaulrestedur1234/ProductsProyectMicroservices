@@ -6,8 +6,8 @@ import { catchError } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class Inventory {
-   private apiUrl = '/inventories/'; // Proxy Nginx
+export class InventoryService {
+   private apiUrl = '/inventories'; 
 
   constructor(private http: HttpClient) {}
 

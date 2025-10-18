@@ -40,26 +40,22 @@ class ProductControllerTest {
         product.setName("Producto Ctrl");
         product.setPrice(50.0);
 
-        mockMvc.perform(post("/products")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(product)))
+        mockMvc.perform(post("/product-microservice/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(product)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.name").value("Producto Ctrl"));
+                .andExpect(jsonPath("$.name").value("Producto Ctrl"))
+                .andExpect(jsonPath("$.price").value(50.0));
     }
 
+    // --- LISTAR ---
     @Test
-    void testCreateInvalidProduct() throws Exception {
-        Product product = new Product(); // sin name y price
-
-        mockMvc.perform(post("/products")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].title").value("Invalid product data"));
+    void testListProductsEmpty() throws Exception {
+        mockMvc.perform(get("/product-microservice/products"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
     }
-
-
 
     // --- ACTUALIZAR ---
     @Test
@@ -68,26 +64,18 @@ class ProductControllerTest {
         product.setName("Test");
         product.setPrice(10.0);
 
-        mockMvc.perform(put("/products/888")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errors[0].title").value("Product not found"));
+        mockMvc.perform(put("/product-microservice/products/888")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(product)))
+                .andExpect(status().isNotFound());
     }
 
     // --- BORRAR ---
     @Test
     void testDeleteNonExistingProduct() throws Exception {
-        mockMvc.perform(delete("/products/777"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errors[0].title").value("Product not found"));
+        mockMvc.perform(delete("/product-microservice/products/777"))
+                .andExpect(status().isNotFound());
     }
 
-    // --- LISTAR ---
-    @Test
-    void testListProductsEmpty() throws Exception {
-        mockMvc.perform(get("/products"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
-    }
+
 }

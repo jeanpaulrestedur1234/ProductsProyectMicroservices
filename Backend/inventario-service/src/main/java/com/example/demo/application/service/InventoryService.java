@@ -2,17 +2,15 @@ package com.example.demo.application.service;
 
 import com.example.demo.application.dto.ProductInventoryDTO;
 import com.example.demo.application.dto.ProductResponse;
-import com.example.demo.domain.model.Inventory;
-import com.example.demo.domain.repository.InventoryRepository;
-import com.example.demo.infrastructure.exception.InventoryNotFoundException;
 import com.example.demo.infrastructure.exception.ProductNotFoundException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,87 +19,114 @@ public class InventoryService {
 
     private static final Logger log = LoggerFactory.getLogger(InventoryService.class);
 
-    private final InventoryRepository repository;
     private final RestTemplate restTemplate;
     private final String productServiceUrl;
 
     public InventoryService(
-            InventoryRepository repository,
-            @Value("${PRODUCT_SERVICE_URL:http://localhost:8081/inventory-microservice/products}") String productServiceUrl) {
-            this.repository = repository;
-            this.restTemplate = new RestTemplate();
-            this.productServiceUrl = productServiceUrl;
+            @Value("${PRODUCT_SERVICE_URL:http://localhost:8081/product-microservice/products}") String productServiceUrl) {
+        this.restTemplate = new RestTemplate();
+        this.productServiceUrl = productServiceUrl;
+    }
+
+    /**
+     * 🔹 Obtener todos los productos con sus cantidades (delegando al microservicio de productos).
+     */
+    public List<ProductInventoryDTO> getAllProductsWithQuantities() {
+        log.info("Fetching all products with quantities from Product microservice...");
+
+        try {
+            ResponseEntity<ProductResponse[]> response = restTemplate.getForEntity(
+                    productServiceUrl,
+                    ProductResponse[].class
+            );
+
+            List<ProductResponse> products = Arrays.asList(response.getBody());
+
+            return products.stream()
+                    .map(product -> new ProductInventoryDTO(
+                            product.getId(),
+                            product.getName(),
+                            product.getSku(),
+                            product.getPrice(),
+                            product.getQuantity()
+                    ))
+                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            log.error("Error fetching products from Product service: {}", e.getMessage());
+            throw new RuntimeException("No se pudo obtener la lista de productos desde el servicio de productos");
+        }
+    }
+
+    /**
+     * 🔹 Obtener la cantidad de inventario (quantity) de un producto por ID.
+     */
+    public ProductInventoryDTO getInventoryByProductId(Long productId) {
+        log.info("Fetching product inventory for productId={}", productId);
+
+        ProductResponse product = getProductById(productId);
+
+        return new ProductInventoryDTO(
+                product.getId(),
+                product.getName(),
+                product.getSku(),
+                product.getPrice(),
+                product.getQuantity()
+        );
+    }
+
+    /**
+     * 🔹 Actualizar la cantidad (quantity) de un producto mediante PATCH al servicio de productos.
+     */
+    public ProductInventoryDTO updateQuantity(Long productId, Integer quantityChange) {
+        log.info("Updating quantity for productId={} with change={}", productId, quantityChange);
+
+        ProductResponse product = getProductById(productId);
+        Integer newQuantity = product.getQuantity() + quantityChange;
+
+        // PATCH request hacia /product-microservice/products/{id}/quantity
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpEntity<Integer> request = new HttpEntity<>(newQuantity, headers);
+
+            ResponseEntity<Integer> response = restTemplate.exchange(
+                    productServiceUrl + "/" + productId + "/quantity",
+                    HttpMethod.PATCH,
+                    request,
+                    Integer.class
+            );
+
+            log.info("Updated quantity for productId={} to {}", productId, response.getBody());
+            product.setQuantity(response.getBody());
+
+        } catch (Exception e) {
+            log.error("Error updating product quantity for productId={}: {}", productId, e.getMessage());
+            throw new RuntimeException("No se pudo actualizar la cantidad del producto");
         }
 
-    // Crear inventario
-    public Inventory createInventory(Long productId, Integer quantity) {
-        log.info("Creating inventory for productId={} quantity={}", productId, quantity);
-        // Validar que el producto exista
-        validateProductExists(productId);
-
-        Inventory inventory = new Inventory(productId, quantity);
-        Inventory saved = repository.save(inventory);
-        log.info("Inventory created: {}", saved);
-        return saved;
+        return new ProductInventoryDTO(
+                product.getId(),
+                product.getName(),
+                product.getSku(),
+                product.getPrice(),
+                product.getQuantity()
+        );
     }
 
-    // Obtener inventario por productId
-    public Inventory getInventoryByProductId(Long productId) {
-        log.info("Fetching inventory for productId={}", productId);
-        return repository.findByProductId(productId)
-                .orElseThrow(() -> new InventoryNotFoundException(productId));
-    }
-
-    // Actualizar cantidad de inventario
-    public Inventory updateQuantity(Long productId, Integer quantityChange) {
-        log.info("Updating inventory for productId={} with change={}", productId, quantityChange);
-        Inventory inventory = repository.findByProductId(productId)
-                .orElseThrow(() -> new InventoryNotFoundException(productId));
-
-        inventory.setQuantity(inventory.getQuantity() + quantityChange);
-        Inventory updated = repository.save(inventory);
-
-        log.info("Inventory updated: {}", updated);
-        log.info("Event: Inventory for product {} changed to {}", productId, updated.getQuantity());
-        return updated;
-    }
-
-    // Obtener todos los productos con cantidades
-    public List<ProductInventoryDTO> getAllProductsWithQuantities() {
-        log.info("Fetching all inventories with product details");
-
-        List<Inventory> inventories = repository.findAll();
-
-        return inventories.stream().map(inventory -> {
-            ProductResponse product;
-            try {
-                product = restTemplate.getForObject(
-                        productServiceUrl + "/" + inventory.getProductId(),
-                        ProductResponse.class
-                );
-            } catch (Exception e) {
-                log.warn("Product ID {} not found in products service", inventory.getProductId());
-                // Manejo de producto inexistente de forma segura
-                product = new ProductResponse(inventory.getProductId(), "UNKNOWN", "UNKNOWN", 0.0);
-            }
-
-            return new ProductInventoryDTO(
-                    inventory.getProductId(),
-                    product.getName(),
-                    product.getSku(),
-                    product.getPrice(),
-                    inventory.getQuantity()
-            );
-        }).collect(Collectors.toList());
-    }
-
-    // Validación centralizada de existencia de producto
-    private void validateProductExists(Long productId) {
+    /**
+     * 🔹 Validar y obtener producto del microservicio de productos.
+     */
+    private ProductResponse getProductById(Long productId) {
         try {
-            restTemplate.getForObject(productServiceUrl + "/" + productId, Object.class);
+            return restTemplate.getForObject(
+                    productServiceUrl + "/" + productId,
+                    ProductResponse.class
+            );
         } catch (Exception e) {
-            log.warn("Product ID {} not found in products service", productId);
+            log.warn("Product ID {} not found in Product service", productId);
             throw new ProductNotFoundException(productId);
         }
     }
 }
+

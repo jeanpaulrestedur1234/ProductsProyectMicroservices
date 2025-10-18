@@ -6,14 +6,16 @@ public class ProductResponse {
     private String name;
     private String sku;
     private Double price;
+    private Integer quantity;
 
     public ProductResponse() {}
 
-    public ProductResponse(Long id, String name, String sku, Double price) {
+    public ProductResponse(Long id, String name, String sku, Double price, Integer quantity) {
         this.id = id;
         this.name = name;
         this.sku = sku;
         this.price = price;
+        this.quantity = quantity;
     }
 
     // Getters y Setters
@@ -28,4 +30,7 @@ public class ProductResponse {
 
     public Double getPrice() { return price; }
     public void setPrice(Double price) { this.price = price; }
+
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
 }

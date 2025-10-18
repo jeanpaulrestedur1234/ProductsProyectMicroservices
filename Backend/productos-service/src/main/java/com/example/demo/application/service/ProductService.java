@@ -39,23 +39,24 @@ public class ProductService {
         return repository.findById(id);
     }
 
-    public Product update(Long id, Product updated) {
-        log.info("Updating product ID: {} with data: {}", id, updated);
-        return repository.findById(id)
-                .map(existing -> {
-                    existing.setName(updated.getName());
-                    existing.setSku(updated.getSku());
-                    existing.setPrice(updated.getPrice());
-                    existing.setDescription(updated.getDescription());
-                    Product saved = repository.save(existing);
-                    log.info("Product updated: {}", saved);
-                    return saved;
-                })
-                .orElseThrow(() -> {
-                    log.warn("Product ID {} not found for update", id);
-                    return new ProductNotFoundException(id);
-                });
+    public Product update(Long id, Product updatedProduct) {
+        Product existing = repository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException(id));
+
+        if (updatedProduct.getName() != null)
+            existing.setName(updatedProduct.getName());
+        if (updatedProduct.getSku() != null)
+            existing.setSku(updatedProduct.getSku());
+        if (updatedProduct.getDescription() != null)
+            existing.setDescription(updatedProduct.getDescription());
+        if (updatedProduct.getPrice() != null)
+            existing.setPrice(updatedProduct.getPrice());
+        if (updatedProduct.getQuantity() != null)
+            existing.setQuantity(updatedProduct.getQuantity());
+
+        return repository.save(existing);
     }
+
 
     public void deleteById(Long id) {
         log.info("Deleting product ID: {}", id);
@@ -73,4 +74,25 @@ public class ProductService {
         log.info("Found {} products", products.size());
         return products;
     }
+    public Integer updateQuantity(Long id, Integer quantity) {
+        log.info("Updating quantity for product ID: {} to {}", id, quantity);
+
+        if (quantity == null || quantity < 0) {
+            log.warn("Invalid quantity value: {}. Quantity cannot be negative or null.", quantity);
+            throw new IllegalArgumentException("Quantity cannot be negative or null");
+        }
+
+        return repository.findById(id)
+                .map(existing -> {
+                    existing.setQuantity(quantity);
+                    repository.save(existing);
+                    log.info("Product quantity updated: {}", existing);
+                    return existing.getQuantity();
+                })
+                .orElseThrow(() -> {
+                    log.warn("Product ID {} not found for quantity update", id);
+                    return new ProductNotFoundException(id);
+                });
+    }
+
 }

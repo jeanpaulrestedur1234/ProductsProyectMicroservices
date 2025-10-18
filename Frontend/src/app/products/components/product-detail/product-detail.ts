@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Products as ProductsService } from '../../services/products';
-import { Inventory as InventoryService } from '../../services/inventory';
+import {  ProductsService } from '../../services/productsService';
+import {  InventoryService } from '../../services/inventoryService';
 import { Product } from '../../models/product';
 
 @Component({

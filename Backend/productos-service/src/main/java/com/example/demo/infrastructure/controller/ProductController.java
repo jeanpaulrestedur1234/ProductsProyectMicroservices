@@ -65,4 +65,11 @@ public class ProductController {
         log.info("DELETE /products/{} - deleted successfully", id);
         return ResponseEntity.noContent().build();
     }
+    @PatchMapping("/{id}/quantity")
+    public ResponseEntity<Integer> updateQuantity(@PathVariable Long id, @RequestBody Integer quantity) {
+        log.info("PATCH /products/{}/quantity - request: {}", id, quantity);
+        Integer updatedQuantity = service.updateQuantity(id, quantity);
+        log.info("PATCH /products/{}/quantity - updated successfully: {}", id, updatedQuantity);
+        return ResponseEntity.ok(updatedQuantity);
+    }
 }
