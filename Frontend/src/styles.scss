@@ -1,4 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'ngx-toastr/toastr';
+
 :root {
   --primary: #2563eb;
   --primary-dark: #1e40af;
@@ -17,41 +18,40 @@
 body{
     background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
 }
-@import 'ngx-toastr/toastr';
 
 .toast-container {
-  
+
   .toast-success {
     background-color: #10b981;
     color: var(--on-primary);
-    
+
     .toast-progress {
       background-color: rgba(255, 255, 255, 0.4);
     }
   }
-  
+
   .toast-error {
     background-color: #ef4444;
     color: var(--on-primary);
-    
+
     .toast-progress {
       background-color: rgba(255, 255, 255, 0.4);
     }
   }
-  
+
   .toast-info {
     background-color: var(--primary);
     color: var(--on-primary);
-    
+
     .toast-progress {
       background-color: rgba(255, 255, 255, 0.4);
     }
   }
-  
+
   .toast-warning {
     background-color: #f59e0b;
     color: var(--on-primary);
-    
+
     .toast-progress {
       background-color: rgba(255, 255, 255, 0.4);
     }

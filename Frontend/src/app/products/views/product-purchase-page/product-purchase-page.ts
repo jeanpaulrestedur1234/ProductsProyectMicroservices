@@ -16,8 +16,9 @@ import { ProductDetail } from '../../components/product-detail/product-detail';
   styleUrl: './product-purchase-page.scss'
 })
 export class ProductPurchasePage implements OnInit {
+  id: string | null = null;
   product: ProductWithQuantity | null = null;
-  loading = false;
+  loading = true;
   error: string | null = null;
   quantitySelected = 1;
   availableQuantity: number = 0;
@@ -30,9 +31,11 @@ export class ProductPurchasePage implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadProductData(id);
+    this.route.queryParamMap.subscribe(params => {
+      this.id = params.get('id');
+    });
+    if (this.id) {
+      this.loadProductData(this.id);
     } else {
       this.error = 'ID de producto no válido';
       this.toastr.error('No se pudo obtener el ID del producto', 'Error');
@@ -45,7 +48,7 @@ export class ProductPurchasePage implements OnInit {
 
     try {
       console.log(`🔍 Cargando datos del producto ID: ${id}`);
-      
+
       const product = await this.inventoryService.getProduct(id);
       console.log('📦 Datos del producto recibidos:', product);
 
@@ -64,7 +67,7 @@ export class ProductPurchasePage implements OnInit {
 
   validateQuantity(): void {
     const maxQuantity = this.product?.quantity ?? 0;
-    
+
     if (this.quantitySelected > maxQuantity) {
       this.quantitySelected = maxQuantity;
     } else if (this.quantitySelected < 1) {
@@ -91,9 +94,9 @@ export class ProductPurchasePage implements OnInit {
     try {
       const newQuantity = this.product.quantity - this.quantitySelected;
       await this.inventoryService.updateQuantity(this.product.id, newQuantity);
-      
+
       this.product.quantity = newQuantity;
-      
+
       console.log(`🛒 Compra de ${this.quantitySelected} unidad(es) realizada. Stock: ${newQuantity}`);
       this.toastr.success(
         `Se compraron ${this.quantitySelected} unidad(es). Stock restante: ${newQuantity}`,
@@ -113,7 +116,7 @@ export class ProductPurchasePage implements OnInit {
   }
 
   get isQuantityValid(): boolean {
-    return this.quantitySelected >= 1 && 
+    return this.quantitySelected >= 1 &&
            this.quantitySelected <= (this.product?.quantity ?? 0);
   }
 

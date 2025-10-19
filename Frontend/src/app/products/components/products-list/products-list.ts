@@ -1,3 +1,4 @@
+import { HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -73,7 +74,7 @@ export class ProductsList implements OnInit {
     this.editedProduct = JSON.parse(JSON.stringify(product));
   }
   goToProductDetail(productId: number) {
-    this.router.navigate(['/products', productId]);
+    this.router.navigate(['/products/purchase'], { queryParams: { id: productId } });
   }
 
 
@@ -134,7 +135,7 @@ export class ProductsList implements OnInit {
     try {
       await this.productsService.deleteProduct(id.toString());
       this.toastr.success('Producto eliminado correctamente.', 'Éxito');
-      
+
       if (this.products.length === 1 && this.page > 1) {
         this.page--;
       }

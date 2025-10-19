@@ -21,7 +21,7 @@
             Cantidad:
           </label>
           <input
-            id="purchaseQuantity" 
+            id="purchaseQuantity"
             type="number"
             class="form-control"
             [(ngModel)]="quantitySelected"
@@ -31,7 +31,7 @@
             (input)="validateQuantity()"
             [class.invalid]="!isQuantityValid && quantitySelected > 0"
           />
-          
+
           <!-- Mensajes de validación -->
           <div class="validation-messages">
             @if (!hasStock) {
@@ -105,7 +105,7 @@
   }
 
   <!-- Estado de carga -->
-  @if (loading) {
+  @if (loading && !error) {
     <div class="loading-state">
       <span class="material-icons spinning">refresh</span>
       <p>Cargando información del producto...</p>
@@ -113,7 +113,7 @@
   }
 
   <!-- Estado de error -->
-  @if (error && !loading) {
+  @if (error && !loading){
     <div class="error-state">
       <span class="material-icons">error_outline</span>
       <p class="error-message">{{ error }}</p>

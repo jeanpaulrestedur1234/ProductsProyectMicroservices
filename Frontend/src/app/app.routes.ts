@@ -9,9 +9,9 @@ export const routes: Routes = [
     data: { name: 'products' }
   },
   {
-    path: 'products/:id',
+    path: 'products/purchase',
     component: ProductPurchasePage,
-    data: { name: 'productPurchase' }
+    data: { name: 'productPurchase', renderMode: 'server' }
   },
   {
     path: '',
