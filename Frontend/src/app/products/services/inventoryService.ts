@@ -31,7 +31,7 @@ export class InventoryService {
    */
   updateQuantity(productId: number, quantity: number): Promise<void> {
     return firstValueFrom(
-      this.http.patch<void>(`${this.apiUrl}/${productId}`, { quantity }, this.httpOptions)
+      this.http.patch<void>(`${this.apiUrl}/${productId}/quantity?quantityChange=${quantity}`, this.httpOptions)
     );
   }
 
