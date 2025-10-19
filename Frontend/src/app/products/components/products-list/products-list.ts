@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Product } from '../../models/product';
 import { ProductsService } from '../../services/productsService';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-products-list',
@@ -25,7 +26,8 @@ export class ProductsList implements OnInit {
 
   constructor(
     private productsService: ProductsService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -52,7 +54,7 @@ export class ProductsList implements OnInit {
       }
 
       this.products = newProducts;
-      this.availableNext = newProducts.length === this.limit;
+      this.availableNext = newProducts.length == this.limit;
     } catch (error: unknown) {
       this.error = 'Error al cargar productos.';
       this.toastr.error(this.error, 'Error');
@@ -70,6 +72,10 @@ export class ProductsList implements OnInit {
     this.editingId = product.id!;
     this.editedProduct = JSON.parse(JSON.stringify(product));
   }
+  goToProductDetail(productId: number) {
+    this.router.navigate(['/products', productId]);
+  }
+
 
   cancelEdit(): void {
     this.editingId = null;

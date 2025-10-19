@@ -1,10 +1,15 @@
 <section class="purchase-page">
   <!-- Detalle del producto -->
-  <app-product-detail class="product-detail"
-    [product]="product"
-    [loading]="loading"
-    [error]="error">
-  </app-product-detail>
+
+    @if (product && !loading && !error){
+
+        <app-product-detail class="product-detail"
+          [product]="product"
+          [loading]="loading"
+          [error]="error">
+        </app-product-detail>
+    }
+
 
   <!-- Opciones de compra -->
   @if (product && !loading && !error) {
