@@ -6,13 +6,15 @@ public class ProductInventoryDTO {
     private String sku;
     private Double price;
     private Integer quantity;
+    private String description;
 
-    public ProductInventoryDTO(Long productId, String name, String sku, Double price, Integer quantity) {
+    public ProductInventoryDTO(Long productId, String name, String sku, Double price, Integer quantity, String description) {
         this.productId = productId;
         this.name = name;
         this.sku = sku;
         this.price = price;
         this.quantity = quantity;
+        this.description = description;
     }
 
     // Getters y setters
@@ -30,4 +32,7 @@ public class ProductInventoryDTO {
 
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 }

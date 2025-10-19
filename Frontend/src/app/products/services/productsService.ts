@@ -14,12 +14,12 @@ export class ProductsService {
 
   private httpOptions = {
     headers: new HttpHeaders({
-      'Access-Control-Allow-Origin': '*'  // Nota: esto solo funciona si el servidor lo permite
+      'Access-Control-Allow-Origin': '*'  
     })
   };
 
   listProducts(page = 0, limit = 10): Promise<Product[]> {
-    const params = new HttpParams().set('page', page).set('limit', limit);
+    const params = new HttpParams().set('page', page).set('size', limit);
     return firstValueFrom(this.http.get<Product[]>(`${this.baseUrl}/products`, { params }));
   }
 
@@ -39,9 +39,5 @@ export class ProductsService {
     return firstValueFrom(this.http.delete<void>(`${this.baseUrl}/products/${id}`));
   }
 
-  // Nueva función para Magic Eden
-  getListings(symbol: string): Promise<any> {
-    const url = `https://api-mainnet.magiceden.dev/v2/collections/${symbol}/listings?offset=0&limit=18`;
-    return firstValueFrom(this.http.get<any>(url, this.httpOptions));
-  }
+
 }

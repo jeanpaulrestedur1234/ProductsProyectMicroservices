@@ -48,7 +48,8 @@ public class InventoryService {
                             product.getName(),
                             product.getSku(),
                             product.getPrice(),
-                            product.getQuantity()
+                            product.getQuantity(),
+                            product.getDescription()
                     ))
                     .collect(Collectors.toList());
 
@@ -71,7 +72,8 @@ public class InventoryService {
                 product.getName(),
                 product.getSku(),
                 product.getPrice(),
-                product.getQuantity()
+                product.getQuantity(),
+                product.getDescription()
         );
     }
 
@@ -110,7 +112,8 @@ public class InventoryService {
                 product.getName(),
                 product.getSku(),
                 product.getPrice(),
-                product.getQuantity()
+                product.getQuantity(),
+                product.getDescription()
         );
     }
 

@@ -1,6 +1,6 @@
 <section class="purchase-page">
   <!-- Detalle del producto -->
-  <app-product-detail
+  <app-product-detail class="product-detail"
     [product]="product"
     [loading]="loading"
     [error]="error">
@@ -16,7 +16,7 @@
             Cantidad:
           </label>
           <input
-            id="purchaseQuantity"
+            id="purchaseQuantity" 
             type="number"
             class="form-control"
             [(ngModel)]="quantitySelected"

@@ -47,6 +47,7 @@ export class ProductPurchasePage implements OnInit {
       console.log(`🔍 Cargando datos del producto ID: ${id}`);
       
       const product = await this.inventoryService.getProduct(id);
+      console.log('📦 Datos del producto recibidos:', product);
 
       this.product = product;
       this.availableQuantity = product? product.quantity || 0 : 0;

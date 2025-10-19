@@ -92,7 +92,10 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border-color);
   display: flex;
+  flex: 1;
   flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 
   &:hover {
     transform: translateY(-8px);
@@ -187,6 +190,13 @@
   }
 }
 
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  align-items: stretch; /* hace que todas las cards tengan la misma altura */
+  height: 100%; /* ocupa todo el alto del contenedor padre */
+}
 /* Acciones de la card */
 .card-actions {
   display: flex;
@@ -194,6 +204,7 @@
   padding: 1rem 1.5rem;
   background: #f9fafb;
   border-top: 1px solid var(--border-color);
+  height: min-content;
 }
 
 .icon-btn {
