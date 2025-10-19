@@ -25,6 +25,7 @@ public class ProductService {
 
     public Product save(Product product) {
         log.info("Attempting to create product: {}", product);
+        log.debug("Validating product ID: {}", product.getId() != null ? product.getId() : "new product");
         if (product.getName() == null || product.getPrice() == null) {
             log.warn("Invalid product data: {}", product);
             throw new InvalidProductException("Name and price must not be null");
@@ -56,6 +57,21 @@ public class ProductService {
 
         return repository.save(existing);
     }
+
+    public Integer purchaseProduct(Long productId, Integer quantityToBuy) {
+        Product product = findById(productId)
+            .orElseThrow(() -> new ProductNotFoundException(productId));
+
+        if (product.getQuantity() < quantityToBuy) {
+            throw new IllegalArgumentException("Not enough stock available");
+        }
+
+        product.setQuantity(product.getQuantity() - quantityToBuy);
+        save(product);
+
+        return product.getQuantity();
+    }
+
 
 
     public void deleteById(Long id) {

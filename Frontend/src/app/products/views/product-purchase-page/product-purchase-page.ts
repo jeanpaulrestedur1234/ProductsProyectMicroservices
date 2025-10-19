@@ -81,9 +81,6 @@ export class ProductPurchasePage implements OnInit {
       this.toastr.error('Producto no disponible', 'Error');
       return;
     }
-    console.log('🛒 Iniciando proceso de compra múltiple');
-    console.log(`🛒 Producto actual:`, this.product);
-    console.log(`🛒 Intentando comprar ${this.quantitySelected} unidad(es) del producto ID: ${this.product.productId}`) ;
 
     if (this.quantitySelected > this.product.quantity) {
       this.toastr.warning('No hay suficiente stock para esta cantidad', 'Stock insuficiente');
@@ -96,11 +93,11 @@ export class ProductPurchasePage implements OnInit {
     }
 
     try {
-      await this.inventoryService.updateQuantity(this.product.productId, this.quantitySelected);
+      await this.inventoryService.quantityPurchase(this.product.productId, this.quantitySelected);
 
       this.product.quantity -= this.quantitySelected;
+      this.availableQuantity -= this.quantitySelected;
 
-      console.log(`🛒 Compra de ${this.quantitySelected} unidad(es) realizada. Stock: ${this.product.quantity}`);
       this.toastr.success(
         `Se compraron ${this.quantitySelected} unidad(es). Stock restante: ${this.product.quantity}`,
         '¡Compra realizada!'
