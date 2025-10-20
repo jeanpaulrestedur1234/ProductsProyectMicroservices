@@ -49,14 +49,29 @@ La estructura de carpetas mostrada (`application`, `domain`, `infrastructure`) r
 
 -----
 
-## 🚀 Levantamiento de la Aplicación
+## 🚀 Gestión del Proyecto 
 
-Desde la **raíz del proyecto** (donde se encuentra `docker-compose.yml`), ejecuta:
+Para simplificar las operaciones comunes como levantar, detener o reiniciar los servicios, se ha incluido un `Makefile` en la raíz del proyecto.
+
+| Comando | Descripción |
+| :--- | :--- |
+| `make up` | **Construye las imágenes** y levanta todos los microservicios y el frontend en modo *detached* (`-d`). |
+| `make down` | Detiene y elimina todos los contenedores y redes creadas por `docker-compose`. |
+| `make rebuild` | Ejecuta `down` seguido de `up`. Es útil para aplicar cambios en el código o en los `Dockerfile`. |
+| `make logs` | Muestra los *logs* combinados de todos los servicios en tiempo real. |
+| `make status` | Muestra el estado actual de los contenedores (`up`, `exited`, etc.). |
+| `make clean` | Detiene y elimina todo, **incluyendo los volúmenes**, forzando la pérdida de los datos de H2. **Usar con precaución.** |
+| `make help` | Muestra todos los comandos disponibles. |
+
+**Ejemplo de uso:**
 
 ```bash
-docker-compose up --build
-```
+# Para levantar la aplicación por primera vez
+make up
 
+# Para reiniciar tras un cambio de código
+make rebuild
+```
 ### Accesos
 
 | Componente | URL de Acceso |
