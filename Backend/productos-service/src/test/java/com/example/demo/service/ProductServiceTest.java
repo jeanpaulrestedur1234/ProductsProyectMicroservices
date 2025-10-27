@@ -33,14 +33,12 @@ class ProductServiceTest {
         product.setPrice(1500.0);
         product.setSku("SKU-123");
         product.setDescription("High-end laptop");
-        product.setQuantity(10);
 
         Product saved = service.save(product);
 
         assertNotNull(saved.getId());
         assertEquals("Laptop", saved.getName());
         assertEquals(1500.0, saved.getPrice());
-        assertEquals(10, saved.getQuantity());
     }
 
     @Test
@@ -60,19 +58,16 @@ class ProductServiceTest {
         Product product = new Product();
         product.setName("Tablet");
         product.setPrice(800.0);
-        product.setQuantity(5);
         product = service.save(product);
 
         Product updated = new Product();
         updated.setName("Tablet Pro");
         updated.setPrice(1000.0);
-        updated.setQuantity(8);
 
         Product result = service.update(product.getId(), updated);
 
         assertEquals("Tablet Pro", result.getName());
         assertEquals(1000.0, result.getPrice());
-        assertEquals(8, result.getQuantity());
     }
 
     @Test
@@ -94,7 +89,6 @@ class ProductServiceTest {
         Product product = new Product();
         product.setName("Mouse");
         product.setPrice(20.0);
-        product.setQuantity(15);
         product = service.save(product);
 
         service.deleteById(product.getId());
@@ -113,29 +107,5 @@ class ProductServiceTest {
         assertEquals("Product with ID 999 not found", ex.getMessage());
     }
 
-    @Test
-    void testUpdateQuantityExistingProduct() {
-        Product product = new Product();
-        product.setName("Monitor");
-        product.setPrice(300.0);
-        product.setQuantity(5);
-        product = service.save(product);
 
-        Integer updatedQuantity = service.updateQuantity(product.getId(), 12);
-
-        assertEquals(12, updatedQuantity);
-        Product updated = repository.findById(product.getId()).orElseThrow();
-        assertEquals(12, updated.getQuantity());
-    }
-
-    @Test
-    void testUpdateQuantityNonExistingProduct() {
-        Long id = 777L;
-
-        ProductNotFoundException ex = assertThrows(ProductNotFoundException.class, () -> {
-            service.updateQuantity(id, 50);
-        });
-
-        assertEquals("Product with ID 777 not found", ex.getMessage());
-    }
 }
