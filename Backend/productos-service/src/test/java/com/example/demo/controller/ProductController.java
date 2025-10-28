@@ -1,4 +1,4 @@
-package com.example.demo.infrastructure.controller;
+package com.example.demo.controller;
 
 import com.example.demo.application.dto.ProductRequestDTO;
 import com.example.demo.application.dto.ProductResponseDTO;

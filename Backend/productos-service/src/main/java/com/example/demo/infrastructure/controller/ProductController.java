@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/product-microservice/products")
+@RequestMapping("/products")
 @RequiredArgsConstructor
 public class ProductController {
 
@@ -106,7 +106,6 @@ public class ProductController {
         }
     }
 
-    // 🔹 Métodos privados de mapeo
     private Product mapToEntity(ProductRequestDTO dto) {
         Product product = new Product();
         product.setName(dto.getName());

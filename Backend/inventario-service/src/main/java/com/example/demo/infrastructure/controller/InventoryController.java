@@ -1,20 +1,20 @@
 package com.example.demo.infrastructure.controller;
 
 import com.example.demo.application.dto.ProductInventoryDTO;
+import com.example.demo.application.dto.ProductInventoryResponseDTO;
 import com.example.demo.application.service.InventoryService;
 import com.example.demo.infrastructure.exception.ProductNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
-@RequestMapping("/inventory-microservice/inventories")
+@RequestMapping("/inventories")
 public class InventoryController {
 
-    private static final Logger log = LoggerFactory.getLogger(InventoryController.class);
     private final InventoryService service;
 
     public InventoryController(InventoryService service) {
@@ -22,82 +22,100 @@ public class InventoryController {
     }
 
     /**
-     * 🔹 Obtener todos los productos con sus cantidades.
+     * 🔹 Obtener todos los inventarios (datos combinados del servicio de productos)
      */
     @GetMapping
-    public ResponseEntity<?> getAllProductsWithQuantities() {
-        log.info("GET /inventories - fetching all products with quantities");
-        try {
-            List<ProductInventoryDTO> result = service.getAllProductsWithQuantities();
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            log.error("Error fetching all products: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error fetching all products: " + e.getMessage());
-        }
+    public ResponseEntity<List<ProductInventoryResponseDTO>> getAllInventories() {
+        log.info("GET /inventories - fetching all inventories");
+        List<ProductInventoryResponseDTO> inventories = service.getAllProductsWithQuantities();
+        return ResponseEntity.ok(inventories);
     }
 
     /**
-     * 🔹 Obtener un producto específico por ID con su cantidad.
+     * 🔹 Obtener inventario por ID (sumando datos del otro servicio)
      */
-    @GetMapping("/{productId}")
-    public ResponseEntity<?> getByProductId(@PathVariable Long productId) {
-        log.info("GET /inventories/{} - request", productId);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getInventoryById(@PathVariable Long id) {
+        log.info("GET /inventories/{} - fetching single inventory", id);
         try {
-            ProductInventoryDTO result = service.getInventoryByProductId(productId);
-            return ResponseEntity.ok(result);
+            ProductInventoryResponseDTO inventory = service.getInventoryByProductId(id);
+            return ResponseEntity.ok(inventory);
         } catch (ProductNotFoundException e) {
-            log.warn("Product not found: {}", productId);
+            log.warn("Inventory not found: {}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Product not found: " + productId);
+                    .body("Inventario no encontrado con ID: " + id);
         } catch (Exception e) {
-            log.error("Error fetching product {}: {}", productId, e.getMessage());
+            log.error("Error fetching inventory {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error fetching product: " + e.getMessage());
+                    .body("Error interno al consultar inventario");
         }
     }
 
     /**
-     * 🔹 Actualizar la cantidad (quantity) de un producto.
+     * 🔹 Actualizar cantidad (sumar o restar)
      */
-    @PatchMapping("/{productId}/quantity")
+    @PatchMapping("/{id}/quantity")
     public ResponseEntity<?> updateQuantity(
-            @PathVariable Long productId,
+            @PathVariable Long id,
             @RequestParam Integer quantityChange) {
-        log.info("PATCH /inventories/{}/quantity - quantityChange={}", productId, quantityChange);
+        log.info("PATCH /inventories/{}/quantity - change={}", id, quantityChange);
         try {
-            ProductInventoryDTO updated = service.updateQuantity(productId, quantityChange);
+            ProductInventoryDTO updated = service.updateQuantity(id, quantityChange);
             return ResponseEntity.ok(updated);
         } catch (ProductNotFoundException e) {
-            log.warn("Product not found: {}", productId);
+            log.warn("Inventory not found: {}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Product not found: " + productId);
+                    .body("Inventario no encontrado con ID: " + id);
         } catch (Exception e) {
-            log.error("Error updating quantity for product {}: {}", productId, e.getMessage());
+            log.error("Error updating inventory quantity: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error updating quantity: " + e.getMessage());
+                    .body("Error al actualizar cantidad");
         }
     }
 
     /**
-     * 🔹 Registrar una compra de un producto (disminuir quantity).
+     * 🔹 Eliminar inventario (primero elimina en el microservicio de productos)
      */
-    @PostMapping("/{productId}/purchase")
-    public ResponseEntity<?> purchaseProduct(
-            @PathVariable Long productId,
-            @RequestParam Integer quantityToBuy) {
-        log.info("POST /inventories/{}/purchase - quantityToBuy={}", productId, quantityToBuy);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteInventory(@PathVariable Long id) {
+        log.info("DELETE /inventories/{} - deleting inventory", id);
         try {
-            ProductInventoryDTO updated = service.purchaseProduct(productId, quantityToBuy);
+            service.deleteInventory(id);
+            return ResponseEntity.noContent().build();
+        } catch (ProductNotFoundException e) {
+            log.warn("Inventory not found: {}", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Inventario no encontrado con ID: " + id);
+        } catch (Exception e) {
+            log.error("Error deleting inventory: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar inventario");
+        }
+    }
+
+    /**
+     * 🔹 Registrar una compra (disminuir cantidad)
+     */
+    @PostMapping("/{id}/purchase")
+    public ResponseEntity<?> purchaseProduct(
+            @PathVariable Long id,
+            @RequestParam Integer quantityToBuy) {
+        log.info("POST /inventories/{}/purchase - quantityToBuy={}", id, quantityToBuy);
+        try {
+            ProductInventoryDTO updated = service.purchaseProduct(id, quantityToBuy);
             return ResponseEntity.ok(updated);
         } catch (ProductNotFoundException e) {
-            log.warn("Product not found: {}", productId);
+            log.warn("Inventory not found: {}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Product not found: " + productId);
+                    .body("Inventario no encontrado con ID: " + id);
+        } catch (RuntimeException e) {
+            log.warn("Error during purchase: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         } catch (Exception e) {
-            log.error("Error purchasing product {}: {}", productId, e.getMessage());
+            log.error("Error purchasing product: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error purchasing product: " + e.getMessage());
+                    .body("Error al procesar la compra");
         }
     }
 }
