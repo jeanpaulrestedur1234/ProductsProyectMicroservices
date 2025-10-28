@@ -1,4 +1,4 @@
-INSERT INTO inventories (id, productId, quantity) VALUES
+INSERT INTO inventories (id, product_id, quantity) VALUES
 (1, 1, 50),
 (2, 2, 30),
 (3, 3, 20),
