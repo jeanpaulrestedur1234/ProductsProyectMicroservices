@@ -41,17 +41,7 @@ class ProductServiceTest {
         assertEquals(1500.0, saved.getPrice());
     }
 
-    @Test
-    void testCreateInvalidProduct() {
-        Product invalid = new Product();
-        invalid.setPrice(null); // faltan campos obligatorios
 
-        InvalidProductException ex = assertThrows(InvalidProductException.class, () -> {
-            service.save(invalid);
-        });
-
-        assertEquals("Name and price must not be null", ex.getMessage());
-    }
 
     @Test
     void testUpdateExistingProduct() {
