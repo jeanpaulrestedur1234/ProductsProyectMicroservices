@@ -1,0 +1,21 @@
+<section class="products-page">
+  <div class="header">
+    <h1 class="text-3xl font-bold">Gestión de Productos</h1>
+    <button
+      (click)="toggleForm()"
+      class="action-btn bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2">
+      <span class="material-icons">
+        {{ showForm ? 'list' : 'add_circle' }}
+      </span>
+      {{ showForm ? 'Ver lista' : 'Crear producto' }}
+    </button>
+  </div>
+
+  <div class="content mt-6">
+    @if (showForm) {
+      <app-product-form (productCreated)="onProductCreated()" (cancel)="onCancel()"></app-product-form>
+    } @else {
+      <app-products-list></app-products-list>
+    }
+  </div>
+</section>

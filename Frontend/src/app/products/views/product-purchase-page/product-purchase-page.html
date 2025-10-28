@@ -1,0 +1,126 @@
+<section class="purchase-page">
+  <!-- Detalle del producto -->
+
+    @if (product && !loading && !error){
+
+        <app-product-detail class="product-detail"
+          [product]="product"
+          [loading]="loading"
+          [error]="error">
+        </app-product-detail>
+    }
+
+
+  <!-- Opciones de compra -->
+  @if (product && !loading && !error) {
+    <div class="purchase-options">
+      <div class="purchase-form">
+        <!-- Campo de cantidad -->
+        <div class="form-group">
+          <label for="purchaseQuantity" class="form-label">
+            Cantidad:
+          </label>
+          <input
+            id="purchaseQuantity"
+            type="number"
+            class="form-control"
+            [(ngModel)]="quantitySelected"
+            [min]="1"
+            [max]="product.quantity"
+            [disabled]="!hasStock"
+            (input)="validateQuantity()"
+            [class.invalid]="!isQuantityValid && quantitySelected > 0"
+          />
+
+          <!-- Mensajes de validación -->
+          <div class="validation-messages">
+            @if (!hasStock) {
+              <span class="error-message">
+                <span class="material-icons">error</span>
+                Producto sin stock disponible
+              </span>
+            }
+            @if (hasStock && quantitySelected >availableQuantity) {
+              <span class="error-message">
+                <span class="material-icons">warning</span>
+                No puede superar el stock disponible ({{availableQuantity }})
+              </span>
+            }
+            @if (hasStock && isQuantityValid) {
+              <span class="success-message">
+                <span class="material-icons">check_circle</span>
+                Stock disponible: {{availableQuantity }} unidad(es)
+              </span>
+            }
+          </div>
+        </div>
+
+        <!-- Información de compra -->
+        @if (hasStock && isQuantityValid) {
+          <div class="purchase-summary">
+            <p class="summary-item">
+              <span class="material-icons">shopping_cart</span>
+              <strong>Cantidad seleccionada:</strong> {{ quantitySelected }}
+            </p>
+            @if (product.price != null) {
+              <p class="summary-item">
+                <span class="material-icons">attach_money</span>
+                <strong>Total:</strong> {{ (product.price * quantitySelected) | currency }}
+              </p>
+            }
+          </div>
+        }
+
+        <!-- Botones de acción -->
+        <div class="action-buttons">
+          <button
+            type="button"
+            class="btn btn-primary"
+            [disabled]="!isQuantityValid || !hasStock"
+            (click)="onBuyMultiple()"
+            [attr.aria-label]="'Comprar ' + quantitySelected + ' unidad(es)'">
+            @if (!hasStock) {
+              <span class="material-icons">block</span>
+              <span>Sin Stock</span>
+            } @else {
+              <span class="material-icons">shopping_cart</span>
+              <span>Comprar</span>
+              @if (quantitySelected > 1) {
+                <span>({{ quantitySelected }})</span>
+              }
+            }
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onBack()"
+            aria-label="Volver a la lista de productos">
+            <span class="material-icons">arrow_back</span>
+            <span>Volver</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Estado de carga -->
+  @if (loading && !error) {
+    <div class="loading-state">
+      <span class="material-icons spinning">refresh</span>
+      <p>Cargando información del producto...</p>
+    </div>
+  }
+
+  <!-- Estado de error -->
+  @if (error && !loading){
+    <div class="error-state">
+      <span class="material-icons">error_outline</span>
+      <p class="error-message">{{ error }}</p>
+      <button type="button" class="btn btn-secondary" (click)="onBack()">
+        <span class="material-icons">arrow_back</span>
+        Volver a productos
+      </button>
+    </div>
+  }
+</section>

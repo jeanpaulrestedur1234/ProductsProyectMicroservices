@@ -1,0 +1,59 @@
+@use 'ngx-toastr/toastr';
+
+:root {
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --primary-light: rgba(37, 99, 235, 0.15);
+  --neutral: #6b7280;
+  --neutral-dark: #4b5563;
+  --on-primary: #ffffff;
+  --on-neutral: #ffffff;
+  --surface: #ffffff;
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --border-color: #d1d5db;
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
+  font-family: 'Inter', sans-serif;
+}
+body{
+    background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+}
+
+.toast-container {
+
+  .toast-success {
+    background-color: #10b981;
+    color: var(--on-primary);
+
+    .toast-progress {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  .toast-error {
+    background-color: #ef4444;
+    color: var(--on-primary);
+
+    .toast-progress {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  .toast-info {
+    background-color: var(--primary);
+    color: var(--on-primary);
+
+    .toast-progress {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  .toast-warning {
+    background-color: #f59e0b;
+    color: var(--on-primary);
+
+    .toast-progress {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+  }
+}
