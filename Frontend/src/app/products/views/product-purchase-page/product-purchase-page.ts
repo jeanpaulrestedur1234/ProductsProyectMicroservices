@@ -93,7 +93,7 @@ export class ProductPurchasePage implements OnInit {
     }
 
     try {
-      await this.inventoryService.quantityPurchase(this.product.productId, this.quantitySelected);
+      await this.inventoryService.quantityPurchase(this.product.id, this.quantitySelected);
 
       this.product.quantity -= this.quantitySelected;
       this.availableQuantity -= this.quantitySelected;

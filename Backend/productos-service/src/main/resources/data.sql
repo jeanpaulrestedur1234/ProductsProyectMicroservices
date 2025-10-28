@@ -11,3 +11,5 @@ INSERT INTO products (id, name, sku, price, description) VALUES (8, 'Producto H'
 INSERT INTO products (id, name, sku, price, description) VALUES (9, 'Producto I', 'I001', 320.0, 'Descripción del producto I');
 INSERT INTO products (id, name, sku, price, description) VALUES (10, 'Producto J', 'J001', 180.0, 'Descripción del producto J');
 INSERT INTO products (id, name, sku, price, description) VALUES (11, 'Producto K', 'K001', 280.0, 'Descripción del producto K');
+
+ALTER TABLE products ALTER COLUMN id RESTART WITH 12;

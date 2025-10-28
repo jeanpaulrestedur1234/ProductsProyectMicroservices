@@ -1,4 +1,5 @@
-export interface ProductBase{
+export interface Product{
+  id: number;
   name: string;
   sku: string;
   price: number;
@@ -7,12 +8,7 @@ export interface ProductBase{
 }
 
 
-export interface Product  extends ProductBase {
-  id: number;
 
-}
-
-export interface ProductWithQuantity extends ProductBase {
-  productId: number ;
+export interface ProductWithQuantity extends Product {
   quantity: number ;
 }
